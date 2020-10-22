@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from typing import List, Callable
 import shutil
+import sys
 import beyondchaosmaster as BC
 
 
@@ -33,11 +34,15 @@ def create_file(file: UploadFile = File(...)):
 
 @app.post("/gen_seed")
 def generate_seed(file: UploadFile = File(...)):
+    #os.system("python beyondchaosmaster/randomizer.py FF3.smc 4.1.-dfklupartypartymakeoverjohnnydmad.12345")
+    
+    print(sys.modules)
+    
     fileobj = file.file
     # consider using https://www.tutorialspoint.com/How-can-I-make-one-Python-file-run-another
-    gen_seed = BC.randomizer.randomize(fileobj)
+    gen_seed = BC.randomize(fileobj)
     return gen_seed
-
+    
 
 @app.get("/")
 async def main():
