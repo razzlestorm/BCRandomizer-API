@@ -1,5 +1,6 @@
 # STD IMPORTS
 import logging
+import os
 
 # 3RD PARTY IMPORTS
 from dotenv import load_dotenv
@@ -14,7 +15,7 @@ load_dotenv()
 app.config.from_pyfile('app_config.cfg')
 
 SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
-app.config('SECRET_KEY') = SECRET_KEY
+app.config['SECRET_KEY'] = SECRET_KEY
 allowed_extensions = app.config['ALLOWED_EXTENSIONS']
 upload_folder = app.config['UPLOAD_FOLDER'] 
 debug_mode = app.config['DEBUG_MODE']
@@ -44,18 +45,20 @@ def upload():
     if 'file' not in request.files:
         flash("Please choose a file to upload")
         return redirect(url_for("index"))
+    file = request.files['file']
+    print(file)
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(upload_folder, filename))
         return redirect(url_for("randomize"))
 
 ## Route to run program
-@app.route("randomize", methods=["GET"])
+@app.route("/randomize", methods=["GET"])
 def randomize():
     pass
 
 ## Route to serve modded ROM file
-@app.route(methods=["GET", "POST"])
+@app.route("/placeholder", methods=["GET", "POST"])
 def serve_file():
     pass
 
