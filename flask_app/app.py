@@ -1,13 +1,18 @@
 # STD IMPORTS
 import logging
 import os
+import sys
 
 # 3RD PARTY IMPORTS
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, request, session, url_for
+from flask import Flask, render_template, redirect, \
+request, session, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 
 # LOCAL IMPORTS
+
+sys.path.append("./beyondchaosmaster")
+from beyondchaosmaster.randomizer import randomize
 
 app = Flask(__name__)
 # app.configs
@@ -28,6 +33,8 @@ if SECRET_KEY is None:
     sys.exit(1)
 
 
+
+
 def allowed_file(filename):
     return '.' and filename.rsplit(".", 1)[1].lower() in allowed_extensions
 
@@ -45,22 +52,27 @@ def upload():
     if 'file' not in request.files:
         flash("Please choose a file to upload")
         return redirect(url_for("index"))
-    file = request.files['file']
-    print(file)
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(upload_folder, filename))
-        return redirect(url_for("randomize"))
+    rfile = request.files['file']
+    if rfile and allowed_file(rfile.filename):
+        filename = secure_filename(rfile.filename)
+        rfile.save(os.path.join(upload_folder, filename))
+        print(rfile)
+        print(filename)
+        return redirect(url_for("randomize_file", rom_name=filename))
 
 ## Route to run program
-@app.route("/randomize", methods=["GET"])
-def randomize():
-    pass
+@app.route("/randomize_file/<rom_name>", methods=["GET", "POST"])
+def randomize_file(rom_name):
+    romfile = os.path.join(upload_folder, rom_name)
+    edited_file=randomize(romfile)
+    print(type(edited_file))
+    args = {}
+    return render_template("options.html", romname=rom_name)
 
 ## Route to serve modded ROM file
-@app.route("/placeholder", methods=["GET", "POST"])
-def serve_file():
-    pass
+@app.route("/serve_file/<rom_name>", methods=["GET", "POST"])
+def serve_file(rom_name):
+    return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
 
 
 
