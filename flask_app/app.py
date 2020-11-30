@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename
 
 sys.path.append("./beyondchaosmaster")
 from beyondchaosmaster.randomizer import randomize
+from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES
 
 app = Flask(__name__)
 # app.configs
@@ -58,15 +59,27 @@ def upload():
         rfile.save(os.path.join(upload_folder, filename))
         print(rfile)
         print(filename)
-        return redirect(url_for("randomize_file", rom_name=filename))
+        return redirect(url_for("options", rom_name=filename))
+
+## Route to choose options
+@app.route("/options/<rom_name>", methods=["GET", "POST"])
+def options(rom_name):
+    if request.method == "POST":
+        # We see the values the user has checked
+        romfile = os.path.join(upload_folder, rom_name)
+        flagcodes = {}
+        flagcodes['rom_name'] = rom_name
+        return redirect(url_for("randomize_file", flags_dict=flags))
+    return render_template("options.html", options=flagcodes)
 
 ## Route to run program
 @app.route("/randomize_file/<rom_name>", methods=["GET", "POST"])
-def randomize_file(rom_name):
+def randomize_file(flags_dict):
     romfile = os.path.join(upload_folder, rom_name)
-    edited_file=randomize(romfile)
+    args = [romfile]
+    # Add options to args
+    edited_file=randomize(args)
     print(type(edited_file))
-    args = {}
     return render_template("options.html", romname=rom_name)
 
 ## Route to serve modded ROM file

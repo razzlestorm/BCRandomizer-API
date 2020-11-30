@@ -1,0 +1,9 @@
+<!doctype html>
+<h1>Configure your settings!</h1>
+<form method="post">
+{% for option in options %}
+<input type="checkbox" name="{{option}}" value="{{option}}">
+{% endfor %}
+
+<input type="submit">
+</form>
