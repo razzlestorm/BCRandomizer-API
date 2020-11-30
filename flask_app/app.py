@@ -64,13 +64,16 @@ def upload():
 ## Route to choose options
 @app.route("/options/<rom_name>", methods=["GET", "POST"])
 def options(rom_name):
+    romfile = os.path.join(upload_folder, rom_name)
+    flags = {flag.name: (flag.attr, flag.description) for flag in ALL_FLAGS}
+    codes = {code.name: (code.description, code.long_description, code.category) for code in ALL_CODES}
+    
+
     if request.method == "POST":
         # We see the values the user has checked
-        romfile = os.path.join(upload_folder, rom_name)
-        flagcodes = {}
-        flagcodes['rom_name'] = rom_name
-        return redirect(url_for("randomize_file", flags_dict=flags))
-    return render_template("options.html", options=flagcodes)
+        # for code in all_codes+all_flags:
+        return redirect(url_for("randomize_file", flags_dict=flagcodes))
+    return render_template("options.html", flags=flags, codes=codes, rom_name=rom_name)
 
 ## Route to run program
 @app.route("/randomize_file/<rom_name>", methods=["GET", "POST"])

@@ -1,8 +1,15 @@
 <!doctype html>
 <h1>Configure your settings!</h1>
 <form method="post">
-{% for option in options %}
-<input type="checkbox" name="{{option}}" value="{{option}}">
+{% for k, v in flags.items() %}
+<input type="checkbox" name="{{k}}" value="{{v}}">
+<p>{{v}}
+{% endfor %}
+
+// Another tab, then use codes, organize by v[-1]
+{% for k, v in codes.items() %}
+<input type="checkbox" name="{{k}}" value="{{v}}">
+<p>{{v}}
 {% endfor %}
 
 <input type="submit">
