@@ -4150,20 +4150,21 @@ def randomize(args):
         # Located in the flask_app main folder
         upload_folder = config['ROM']['upload_folder']
         print('ARGS: ', args)
-        f = open(args[0], 'rb')
+        sourcefile = args[0]
+        f = open(sourcefile, 'rb')
         data = f.read()
         f.close()
     except IOError:
         flash("Please make sure you've uploaded a proper .smc or .sfc file.")
     del f
 
-    ######## EDITED TO HERE ########
+    saveflags = False
     flaghelptext = '''0-9 Shorthand for the text saved under that digit, if any
 !   Recommended new player flags
 -   Use all flags EXCEPT the ones listed'''
 
     speeddial_opts = {}
-
+    # EDIT THIS TO TAKE IN ARGUMENT
     if len(args) > 2:
         fullseed = args[2].strip()
     else:
@@ -4195,6 +4196,7 @@ def randomize(args):
                 print("Available modes:\n")
                 for i, mode in enumerate(ALL_MODES):
                     print("{}. {} - {}".format(i+1, mode.name, mode.description))
+                # EDIT THIS TO TAKE IN ARGUMENT
                 mode_str = input("\nEnter desired mode number or name:\n").strip()
                 try:
                     mode_num = int(mode_str) - 1
@@ -4213,6 +4215,7 @@ def randomize(args):
             for k, v in sorted(speeddial_opts.items()):
                 print("    %s: %s" % (k, v))
             print()
+            # EDIT THIS TO TAKE IN ARGUMENT
             flags = input("Please input your desired flags (blank for "
                           "all of them):\n> ").strip()
             if ":" in flags:
@@ -4252,7 +4255,7 @@ def randomize(args):
         seed = int(seed)
     seed = seed % (10**10)
     reseed()
-
+    # EDIT THIS TO TAKE IN ARGUMENT
     if saveflags:
         try:
             config = configparser.ConfigParser()
@@ -4290,6 +4293,7 @@ def randomize(args):
 
     h = md5(data).hexdigest()
     if h != MD5HASH:
+        # EDIT THIS TO DEAL WITH BAD ROMS
         print("WARNING! The md5 hash of this file does not match the known "
               "hash of the english FF6 1.0 rom!")
         x = input("Continue? y/n ")
@@ -4297,7 +4301,7 @@ def randomize(args):
             return
 
     copyfile(sourcefile, outfile)
-
+    # EDIT THE FLAGS VARIABLE TO TAKE IN FLAGS FROM FLASK APP
     flags = flags.lower()
     flags = flags.replace('endless9', 'endless~nine~')
     for d in "!0123456789":
@@ -4336,7 +4340,7 @@ def randomize(args):
         activation_string += "ALL HALLOWS' EVE MODE ACTIVATED\n"
 
     print(activation_string)
-
+    # EDIT THIS TO TAKE IN ARGUMENT
     if options_.is_code_active('randomboost'):
         x = input("Please enter a randomness "
                   "multiplier value (blank for tierless): ")
