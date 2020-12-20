@@ -4165,70 +4165,62 @@ def randomize(args):
 
     speeddial_opts = {}
     # EDIT THIS TO TAKE IN ARGUMENT
-    if len(args) > 2:
-        fullseed = args[2].strip()
-    else:
-        fullseed = input("Please input a seed value (blank for a random "
-                         "seed):\n> ").strip()
+
+    fullseed = args[1]
+    print()
+
+    if '.' not in fullseed:
+        config = configparser.ConfigParser()
+        config.read('bcex.cfg')
+        if 'speeddial' in config:
+            speeddial_opts = config['speeddial']
+        else:
+            try:
+                savedflags = []
+                with open('savedflags.txt', 'r') as sff:
+                    savedflags = [l.strip() for l in sff.readlines() if ":" in l]
+                for line in savedflags:
+                    line = line.split(':')
+                    line[0] = ''.join(c for c in line[0] if c in '0123456789')
+                    speeddial_opts[line[0]] = ''.join(line[1:]).strip()
+            except IOError:
+                pass
+
+        speeddial_opts['!'] = '-dfklu partyparty makeover johnnydmad'
+
+
+        mode_num = None
+        mode_str = args[2]
+        try:
+            mode_num = int(mode_str) - 1
+        except ValueError:
+            for i, m in enumerate(ALL_MODES):
+                if m.name == mode_str:
+                    mode_num = i
+                    break
+        mode = ALL_MODES[mode_num]
+        allowed_flags = [f for f in ALL_FLAGS if f.name not in mode.prohibited_flags]
         print()
-
-        if '.' not in fullseed:
-            config = configparser.ConfigParser()
-            config.read('bcex.cfg')
-            if 'speeddial' in config:
-                speeddial_opts = config['speeddial']
-            else:
-                try:
-                    savedflags = []
-                    with open('savedflags.txt', 'r') as sff:
-                        savedflags = [l.strip() for l in sff.readlines() if ":" in l]
-                    for line in savedflags:
-                        line = line.split(':')
-                        line[0] = ''.join(c for c in line[0] if c in '0123456789')
-                        speeddial_opts[line[0]] = ''.join(line[1:]).strip()
-                except IOError:
-                    pass
-
-            speeddial_opts['!'] = '-dfklu partyparty makeover johnnydmad'
-
-            mode_num = None
-            while mode_num not in range(len(ALL_MODES)):
-                print("Available modes:\n")
-                for i, mode in enumerate(ALL_MODES):
-                    print("{}. {} - {}".format(i+1, mode.name, mode.description))
-                # EDIT THIS TO TAKE IN ARGUMENT
-                mode_str = input("\nEnter desired mode number or name:\n").strip()
-                try:
-                    mode_num = int(mode_str) - 1
-                except ValueError:
-                    for i, m in enumerate(ALL_MODES):
-                        if m.name == mode_str:
-                            mode_num = i
-                            break
-            mode = ALL_MODES[mode_num]
-            allowed_flags = [f for f in ALL_FLAGS if f.name not in mode.prohibited_flags]
-            print()
-            for flag in sorted(allowed_flags):
-                print(flag.name, flag.description)
-            print(flaghelptext + "\n")
-            print("Save frequently used flag sets by adding 0: through 9: before the flags.")
-            for k, v in sorted(speeddial_opts.items()):
-                print("    %s: %s" % (k, v))
-            print()
-            # EDIT THIS TO TAKE IN ARGUMENT
-            flags = input("Please input your desired flags (blank for "
-                          "all of them):\n> ").strip()
-            if ":" in flags:
-                flags = flags.split(':')
-                dial = ''.join(c for c in flags[0] if c in '0123456789')
-                if len(dial) == 1:
-                    speeddial_opts[dial] = flags[1]
-                    print('\nSaving flags "%s" in slot %s' % (flags[1], dial))
-                    saveflags = True
-                flags = flags[1]
-            fullseed = ".%i.%s.%s" % (mode_num+1, flags, fullseed)
-            print()
-
+        for flag in sorted(allowed_flags):
+            print(flag.name, flag.description)
+        print(flaghelptext + "\n")
+        print("Save frequently used flag sets by adding 0: through 9: before the flags.")
+        for k, v in sorted(speeddial_opts.items()):
+            print("    %s: %s" % (k, v))
+        print()
+        flags = "".join(f for f in args[3])
+        '''
+        if ":" in flags:
+            flags = flags.split(':')
+            dial = ''.join(c for c in flags[0] if c in '0123456789')
+            if len(dial) == 1:
+                speeddial_opts[dial] = flags[1]
+                print('\nSaving flags "%s" in slot %s' % (flags[1], dial))
+                saveflags = True
+            flags = flags[1]
+        '''
+        fullseed = ".%i.%s.%s" % (mode_num+1, flags, fullseed)
+        print()
     try:
         version, mode_str, flags, seed = tuple(fullseed.split('.'))
     except ValueError:
@@ -4255,7 +4247,6 @@ def randomize(args):
         seed = int(seed)
     seed = seed % (10**10)
     reseed()
-    # EDIT THIS TO TAKE IN ARGUMENT
     if saveflags:
         try:
             config = configparser.ConfigParser()

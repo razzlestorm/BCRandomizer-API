@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 
 sys.path.append("./beyondchaosmaster")
 from beyondchaosmaster.randomizer import randomize
-from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES
+from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
 app = Flask(__name__)
 # app.configs
@@ -68,34 +68,38 @@ def options():
     romfile = os.path.join(upload_folder, rom_name)
     flags = {flag.name: (flag.attr, flag.description) for flag in ALL_FLAGS}
     codes = {code.name: (code.description, code.long_description, code.category) for code in ALL_CODES}
+    modes = {mode.name: mode.description for mode in ALL_MODES}
+    defaults = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'i',
+                'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                'u', 'w', 'y', 'z', 'johnnydmad',
+                'makeover', 'partyparty']
     if request.method == "POST":
         # We see the values the user has checked
         # for code in all_codes+all_flags:
         flagcodes = {**flags, **codes}
-        print(request.form.get("flags"), request.form.get("codes"))
-        # {k:v for k, v in request.form.items()} will return a dict of everything
-        flagcodes = json.dumps({k:v for k, v in request.form.items()})
-        print(flagcodes)
-        return redirect(url_for("randomize_file", flags_dict=flagcodes, rom_name=rom_name))
-    return render_template("options.html", flags=flags, codes=codes, rom_name=rom_name)
+        seed = request.form.get('seed')
+        flagcodemode = json.dumps([k for k in request.form.keys()])
+        return redirect(url_for("randomize_file", seed=seed, flags_list=flagcodemode, rom_name=rom_name))
+    return render_template("options.html", defaults=defaults, flags=flags, codes=codes, modes=modes, rom_name=rom_name)
 
 ## Route to run program
 @app.route("/randomize_file/", methods=["GET", "POST"])
 def randomize_file():
     romfile = os.path.join(upload_folder, request.args.get('rom_name'))
-    input_codes = json.loads(request.args.get('flags_dict'))
-    args = [romfile, input_codes]
+    seed = request.args.get('seed')
+    input_codes = json.loads(request.args.get('flags_list'))
+    args = [romfile, seed, input_codes[1], input_codes[2:]]
     # Add options to args
-    edited_file = randomize(args)
+    outfile = randomize(args)
     # The edited_file name has the upload_folder attached to its path
-    file_name = edited_file.split("\\")[1]
+    file_name = outfile.split("\\")[1]
     return redirect(url_for("serve_file", rom_name=file_name))
 
+# Create independent route with buttons to serve ROM/TXT
 ## Route to serve modded ROM file
 @app.route("/serve_file/<path:rom_name>", methods=["GET", "POST"])
 def serve_file(rom_name):
-    send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
-    return redirect(url_for("upload"))
+    return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
 
 
 
