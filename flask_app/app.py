@@ -86,15 +86,16 @@ def randomize_file():
     input_codes = json.loads(request.args.get('flags_dict'))
     args = [romfile, input_codes]
     # Add options to args
-    #breakpoint()
-    edited_file=randomize(args)
-    print(type(edited_file))
-    return render_template("options.html", rom_name=rom_name)
+    edited_file = randomize(args)
+    # The edited_file name has the upload_folder attached to its path
+    file_name = edited_file.split("\\")[1]
+    return redirect(url_for("serve_file", rom_name=file_name))
 
 ## Route to serve modded ROM file
-@app.route("/serve_file/", methods=["GET", "POST"])
-def serve_file():
-    return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
+@app.route("/serve_file/<path:rom_name>", methods=["GET", "POST"])
+def serve_file(rom_name):
+    send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
+    return redirect(url_for("upload"))
 
 
 
