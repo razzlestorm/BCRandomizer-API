@@ -99,7 +99,11 @@ def randomize_file():
 ## Route to serve modded ROM file
 @app.route("/serve_file/<path:rom_name>", methods=["GET", "POST"])
 def serve_file(rom_name):
-    return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
+    if request.method == "POST":
+        # create buttons to POST ROM and txt
+        return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
+    seed = rom_name.split(".")[1]
+    return render_template("serve_file.html", filename=rom_name, seed=seed)
 
 
 
