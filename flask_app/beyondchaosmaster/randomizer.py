@@ -4285,14 +4285,12 @@ def randomize(args):
     h = md5(data).hexdigest()
     if h != MD5HASH:
         # EDIT THIS TO DEAL WITH BAD ROMS
-        print("WARNING! The md5 hash of this file does not match the known "
+        warning = ("\WARNING! The md5 hash of this file does not match the known "
               "hash of the english FF6 1.0 rom!")
-        x = input("Continue? y/n ")
-        if not (x and x.lower()[0] == 'y'):
-            return
+        return warning
 
     copyfile(sourcefile, outfile)
-    # EDIT THE FLAGS VARIABLE TO TAKE IN FLAGS FROM FLASK APP
+
     flags = flags.lower()
     flags = flags.replace('endless9', 'endless~nine~')
     for d in "!0123456789":

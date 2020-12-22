@@ -103,9 +103,16 @@ def serve_file(rom_name):
         # create buttons to POST ROM and txt
         return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
     seed = rom_name.split(".")[1]
-    return render_template("serve_file.html", filename=rom_name, seed=seed)
+    log = rom_name.replace('smc', 'txt')
+    return render_template("serve_file.html", filename=rom_name, seed=seed, log=log)
 
+@app.route("/serve_smc/<path:rom_name>", methods=["GET", "POST"])
+def serve_smc(rom_name):
+    return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
 
+@app.route("/serve_log/<path:log_name>", methods=["GET", "POST"])
+def serve_log(log_name):
+    return send_from_directory(upload_folder, filename=log_name, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=debug_mode, port=5001)
