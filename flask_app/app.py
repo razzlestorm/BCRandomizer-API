@@ -96,15 +96,15 @@ def randomize_file():
     outfile = randomize(args)
     # The edited_file name has the upload_folder attached to its path
     file_name = outfile.split("\\")[1]
-    return redirect(url_for("serve_file", rom_name=file_name))
+    return redirect(url_for("serve_files", rom_name=file_name))
 
 # Create independent route with buttons to serve ROM/TXT
 ## Route to serve modded ROM file
-@app.route("/serve_file/<path:rom_name>", methods=["GET", "POST"])
+@app.route("/serve_files/<path:rom_name>", methods=["GET", "POST"])
 def serve_file(rom_name):
     seed = rom_name.split(".")[1]
     log = rom_name.replace('smc', 'txt')
-    return render_template("serve_file.html", filename=rom_name, seed=seed, log=log)
+    return render_template("serve_files.html", filename=rom_name, seed=seed, log=log)
 
 @app.route("/serve_smc/<path:rom_name>", methods=["GET", "POST"])
 def serve_smc(rom_name):
