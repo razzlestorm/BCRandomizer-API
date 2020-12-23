@@ -23,7 +23,7 @@ app.config.from_pyfile('app_config.cfg')
 SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
 allowed_extensions = app.config['ALLOWED_EXTENSIONS']
-upload_folder = app.config['UPLOAD_FOLDER'] 
+upload_folder = app.config['UPLOAD_FOLDER']
 debug_mode = app.config['DEBUG_MODE']
 logging_file_name = app.config['LOGGING_FILE_NAME']
 logging_file_size = app.config['LOGGING_FILE_SIZE']
