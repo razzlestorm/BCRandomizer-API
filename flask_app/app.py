@@ -78,8 +78,9 @@ def options():
         # for code in all_codes+all_flags:
         flagcodes = {**flags, **codes}
         seed = request.form.get('seed')
+        mode = request.form.get('mode')
         flagcodemode = json.dumps([k for k in request.form.keys()])
-        return redirect(url_for("randomize_file", seed=seed, flags_list=flagcodemode, rom_name=rom_name))
+        return redirect(url_for("randomize_file", mode=mode, seed=seed, flags_list=flagcodemode, rom_name=rom_name))
     return render_template("options.html", defaults=defaults, flags=flags, codes=codes, modes=modes, rom_name=rom_name)
 
 ## Route to run program
@@ -87,8 +88,10 @@ def options():
 def randomize_file():
     romfile = os.path.join(upload_folder, request.args.get('rom_name'))
     seed = request.args.get('seed')
+    mode = request.args.get('mode')
     input_codes = json.loads(request.args.get('flags_list'))
-    args = [romfile, seed, input_codes[1], input_codes[2:]]
+    print(input_codes)
+    args = [romfile, seed, mode, input_codes[2:]]
     # Add options to args
     outfile = randomize(args)
     # The edited_file name has the upload_folder attached to its path
@@ -99,9 +102,6 @@ def randomize_file():
 ## Route to serve modded ROM file
 @app.route("/serve_file/<path:rom_name>", methods=["GET", "POST"])
 def serve_file(rom_name):
-    if request.method == "POST":
-        # create buttons to POST ROM and txt
-        return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
     seed = rom_name.split(".")[1]
     log = rom_name.replace('smc', 'txt')
     return render_template("serve_file.html", filename=rom_name, seed=seed, log=log)
