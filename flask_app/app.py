@@ -20,20 +20,18 @@ app = Flask(__name__)
 load_dotenv()
 app.config.from_pyfile('app_config.cfg')
 
-SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
+SECRET_KEY = os.getenv('FLASK_SECRET_KEY') 
 app.config['SECRET_KEY'] = SECRET_KEY
 allowed_extensions = app.config['ALLOWED_EXTENSIONS']
 upload_folder = app.config['UPLOAD_FOLDER']
-debug_mode = app.config['DEBUG_MODE']
-logging_file_name = app.config['LOGGING_FILE_NAME']
-logging_file_size = app.config['LOGGING_FILE_SIZE']
-logging_file_count = app.config['LOGGING_FILE_COUNT']
-logging_file_level = app.config['LOGGING_FILE_LEVEL']
-if SECRET_KEY is None:
-    app.logger.error('Env variable FLASK_SECRET_KEY is not defined. Please set it with a custom secret value in ./.env')
-    sys.exit(1)
-
-
+#debug_mode = app.config['DEBUG_MODE']
+#logging_file_name = app.config['LOGGING_FILE_NAME']
+#logging_file_size = app.config['LOGGING_FILE_SIZE']
+#logging_file_count = app.config['LOGGING_FILE_COUNT']
+#logging_file_level = app.config['LOGGING_FILE_LEVEL']
+#if SECRET_KEY is None:
+#    app.logger.error('Env variable FLASK_SECRET_KEY is not defined. Please set it with a custom secret value in ./.env')
+#    sys.exit(1)
 
 
 def allowed_file(filename):
