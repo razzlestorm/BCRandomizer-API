@@ -32,9 +32,14 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Running the tests
+## TO DO
 
-Explain how to run the automated tests for this system
+* Check for conflicting modes/flags
+* Create better checks for improper smc files.
+* Create graphics for the html files
+* Enable batch generation of files.
+
+
 
 ### Break down into end to end tests
 
