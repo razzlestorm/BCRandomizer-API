@@ -12,8 +12,8 @@ from werkzeug.utils import secure_filename
 # LOCAL IMPORTS
 
 sys.path.append("./beyondchaosmaster")
-from beyondchaosmaster.randomizer import randomize
-from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
+from .beyondchaosmaster.randomizer import randomize
+from .beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
 app = Flask(__name__)
 # app.configs
