@@ -1,2 +1,2 @@
-from .app import app
 import beyondchaosmaster
+from .app import app
