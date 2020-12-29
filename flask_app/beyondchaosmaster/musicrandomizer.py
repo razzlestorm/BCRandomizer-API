@@ -12,6 +12,8 @@ from utils import (utilrandom as random, open_mei_fallback as open)
 from mml2mfvi import mml_to_akao, get_variant_list
 
 
+RUN_PATH = "app/flask_app/beyondchaosmaster"
+
 try:
     from sys import _MEIPASS
     MEI = True
@@ -19,7 +21,7 @@ except ImportError:
     MEI = False
     
 HIROM = 0xC00000
-MUSIC_PATH = os.path.join("flask_app\\beyondchaosmaster\\custom",'music')
+MUSIC_PATH = os.path.join(RUN_PATH, "custom",'music')
 INST_METADATA_OFFSET = 0x310000    #0x600 bytes
 CONFIG = configparser.RawConfigParser({
         'free_rom_space': '310600-380000',
@@ -322,7 +324,7 @@ def insert_instruments(fout, metadata_pos= False):
         filename = (name + '.brr').lower()
         
         try:
-            with open(os.path.join('flask_app\\beyondchaosmaster\\data', 'samples', filename), 'rb') as f:
+            with open(os.path.join(RUN_PATH, 'data', 'samples', filename), 'rb') as f:
                 sdata = f.read()
         except IOError:
             print("WARNING: couldn't load sample file {}".format(filename))
@@ -1167,7 +1169,7 @@ def process_formation_music_by_table(data, form_music_overrides={}):
     o_monsters = 0xF0000
     o_epacks = 0xF5000
     
-    with open(os.path.join("flask_app\\beyondchaosmaster\\tables","formationmusic.txt"), "r") as f:
+    with open(os.path.join(RUN_PATH, "tables","formationmusic.txt"), "r") as f:
         tbl = f.readlines()
     
     table = []
@@ -1496,7 +1498,7 @@ def manage_opera(fout, affect_music):
     
     singer_options = []
     try:
-        with open(os.path.join("beyondchaosmaster\\custom",'opera.txt')) as f:
+        with open(os.path.join(RUN_PATH, "custom",'opera.txt')) as f:
             for line in f.readlines():
                 singer_options.append([l.strip() for l in line.split('|')])
     except IOError:
@@ -1636,7 +1638,7 @@ def manage_opera(fout, affect_music):
         'sleeping': [0x86, 0x87, 0x88, 0x89, 0x08, 0x09]
             }
     
-    opath = os.path.join("beyondchaosmaster\\custom","opera")
+    opath = os.path.join(RUN_PATH, "custom","opera")
     #load scholar graphics
     try:
         with open(os.path.join(opath, "ralse.bin"),"rb") as f:
@@ -1654,7 +1656,7 @@ def manage_opera(fout, affect_music):
             sprite = f.read()
     except IOError:
         try:
-            with open(os.path.join("beyondchaosmaster\\custom","sprites", f"{merge[4]}"),"rb") as f:
+            with open(os.path.join(RUN_PATH, "custom","sprites", f"{merge[4]}"),"rb") as f:
                 sprite = f.read()
         except:
             print(f"failed to open custom/opera/{merge[4]} or custom/sprites/{merge[4]}")
@@ -1678,7 +1680,7 @@ def manage_opera(fout, affect_music):
                 sprite = f.read()
         except IOError:
             try:
-                with open(os.path.join("beyondchaosmaster\\custom","sprites", f"{c.sprite}.bin"),"rb") as f:
+                with open(os.path.join(RUN_PATH, "custom","sprites", f"{c.sprite}.bin"),"rb") as f:
                     sprite = f.read()
             except:
                 print(f"failed to open custom/opera/{c.sprite}.bin or custom/sprites/{c.sprite}.bin")
@@ -1893,7 +1895,7 @@ def create_sprite(sprite, extra_tiles=None):
     
 def read_opera_mml(file):
     try:
-        file = os.path.join("beyondchaosmaster\\custom",'opera',f'{file}.mml')
+        file = os.path.join(RUN_PATH, "custom",'opera',f'{file}.mml')
         with open(file, "r") as f:
             mml = f.read()
         return mml

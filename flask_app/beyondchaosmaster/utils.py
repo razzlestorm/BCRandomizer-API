@@ -16,6 +16,9 @@ except ImportError:
     # tblpath = "tables"
     MEI = False
 
+RUN_PATH = "app/flask_app/beyondchaosmaster"
+
+
 ENEMY_TABLE = path.join(tblpath, "enemycodes.txt")
 ITEM_TABLE = path.join(tblpath, "itemcodes.txt")
 SPELL_TABLE = path.join(tblpath, "spellcodes.txt")
@@ -57,7 +60,7 @@ SKIP_EVENTS_TABLE = path.join(tblpath, "skipevents.txt")
 DIVERGENT_TABLE = path.join(tblpath, "divergentedits.txt")
 MAGICITE_TABLE = path.join(tblpath, "magicite.txt")
 
-custom_path = "flask_app\\beyondchaosmaster\\custom"
+custom_path = path.join(RUN_PATH, "custom")
 MALE_NAMES_TABLE = path.join(custom_path, "malenames.txt")
 FEMALE_NAMES_TABLE = path.join(custom_path, "femalenames.txt")
 SPRITE_REPLACEMENT_TABLE = path.join(custom_path, "spritereplacements.txt")

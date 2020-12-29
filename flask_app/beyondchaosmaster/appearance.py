@@ -11,6 +11,9 @@ from utils import (CHARACTER_PALETTE_TABLE, EVENT_PALETTE_TABLE, FEMALE_NAMES_TA
                    open_mei_fallback, read_multi, shuffle_char_hues,
                    Substitution, utilrandom as random, write_multi)
 
+
+RUN_PATH = "app/flask_app/beyondchaosmaster"
+
 def recolor_character_palette(fout, pointer, palette=None, flesh=False, middle=True, santa=False, skintones=None, char_hues=None, trance=False):
     fout.seek(pointer)
     if palette is None:
@@ -547,7 +550,7 @@ def manage_character_appearance(fout, preserve_graphics=False):
         for line in f.readlines():
             char_id, filename = line.strip().split(',', 1)
             try:
-                g = open_mei_fallback(os.path.join("flask_app\\beyondchaosmaster\\custom", "sprites", filename), "rb")
+                g = open_mei_fallback(os.path.join(RUN_PATH, "custom", "sprites", filename), "rb")
             except IOError:
                 continue
 
@@ -614,8 +617,8 @@ def manage_character_appearance(fout, preserve_graphics=False):
                 use_fallback = False
 
                 try:
-                    g = open_mei_fallback(os.path.join("flask_app\\beyondchaosmaster\\custom", "sprites", swap_to[c].portrait_filename), "rb")
-                    h = open_mei_fallback(os.path.join("flask_app\\beyondchaosmaster\\custom", "sprites", swap_to[c].portrait_palette_filename), "rb")
+                    g = open_mei_fallback(os.path.join(RUN_PATH, "custom", "sprites", swap_to[c].portrait_filename), "rb")
+                    h = open_mei_fallback(os.path.join(RUN_PATH, "custom", "sprites", swap_to[c].portrait_palette_filename), "rb")
                 except IOError:
                     use_fallback = True
                     print("failed to load portrait %s for %s, using fallback" %(swap_to[c].portrait_filename, swap_to[c].name))
@@ -650,7 +653,7 @@ def manage_character_appearance(fout, preserve_graphics=False):
 
         if sprite_swap_mode and c in swap_to:
             try:
-                g = open_mei_fallback(os.path.join("flask_app\\beyondchaosmaster\\custom", "sprites", swap_to[c].file), "rb")
+                g = open_mei_fallback(os.path.join(RUN_PATH "custom", "sprites", swap_to[c].file), "rb")
             except IOError:
                 newsprite = sprites[change_to[c]]
                 for ch in characters:
