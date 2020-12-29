@@ -18,20 +18,24 @@ sys.path.append(sys.path[0] + "/flask_app/beyondchaosmaster")
 #For Heroku
 sys.path.append("/app/flask_app")
 sys.path.append("/app/flask_app/beyondchaosmaster")
-print("DEBUG: " + f'{sys.path}')
 from beyondchaosmaster.randomizer import randomize
 from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
 app = Flask(__name__)
 # app.configs
+# CHANGE FOR HEROKU
+'''
 load_dotenv()
 app.config.from_pyfile('app_config.cfg')
+'''
 
 SECRET_KEY = os.getenv('FLASK_SECRET_KEY') 
 app.config['SECRET_KEY'] = SECRET_KEY
-allowed_extensions = app.config['ALLOWED_EXTENSIONS']
-upload_folder = app.config['UPLOAD_FOLDER']
-debug_mode = app.config['DEBUG_MODE']
+# Change these to config[KEY] for local
+allowed_extensions = os.getenv('ALLOWED_EXTENSIONS')
+upload_folder = os.getenv('UPLOAD_FOLDER')
+debug_mode = os.getenv('DEBUG_MODE')
+print(allowed_extensions, upload_folder, debug_mode)
 #logging_file_name = app.config['LOGGING_FILE_NAME']
 #logging_file_size = app.config['LOGGING_FILE_SIZE']
 #logging_file_count = app.config['LOGGING_FILE_COUNT']
