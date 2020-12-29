@@ -11,8 +11,13 @@ from werkzeug.utils import secure_filename
 
 # LOCAL IMPORTS
 
+#for local
 sys.path.append(sys.path[0] + "/flask_app")
 sys.path.append(sys.path[0] + "/flask_app/beyondchaosmaster")
+
+#For Heroku
+sys.path.append("/app/flask_app")
+sys.path.append("/app/flask_app/beyondchaosmaster")
 print("DEBUG: " + f'{sys.path}')
 from beyondchaosmaster.randomizer import randomize
 from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
