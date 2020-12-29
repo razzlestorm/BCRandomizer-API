@@ -65,6 +65,7 @@ def upload():
     rfile = request.files['file']
     if rfile and allowed_file(rfile.filename):
         filename = secure_filename(rfile.filename)
+        print('CWD ', os.getcwd())
         rfile.save(os.path.join(upload_folder, filename))
         print(rfile)
         print(filename)
