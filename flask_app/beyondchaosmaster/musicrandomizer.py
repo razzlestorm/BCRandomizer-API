@@ -12,7 +12,7 @@ from utils import (utilrandom as random, open_mei_fallback as open)
 from mml2mfvi import mml_to_akao, get_variant_list
 
 
-RUN_PATH = "app/flask_app/beyondchaosmaster"
+RUN_PATH = "flask_app/beyondchaosmaster"
 
 try:
     from sys import _MEIPASS

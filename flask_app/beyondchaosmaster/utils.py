@@ -16,7 +16,7 @@ except ImportError:
     # tblpath = "tables"
     MEI = False
 
-RUN_PATH = "app/flask_app/beyondchaosmaster"
+RUN_PATH = "flask_app/beyondchaosmaster"
 
 
 ENEMY_TABLE = path.join(tblpath, "enemycodes.txt")

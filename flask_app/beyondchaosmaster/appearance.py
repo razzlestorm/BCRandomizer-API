@@ -12,7 +12,7 @@ from utils import (CHARACTER_PALETTE_TABLE, EVENT_PALETTE_TABLE, FEMALE_NAMES_TA
                    Substitution, utilrandom as random, write_multi)
 
 
-RUN_PATH = "app/flask_app/beyondchaosmaster"
+RUN_PATH = "flask_app/beyondchaosmaster"
 
 def recolor_character_palette(fout, pointer, palette=None, flesh=False, middle=True, santa=False, skintones=None, char_hues=None, trance=False):
     fout.seek(pointer)
