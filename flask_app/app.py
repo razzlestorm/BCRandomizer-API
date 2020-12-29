@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 
 sys.path.append(sys.path[0] + "\\flask_app")
 sys.path.append(sys.path[0] + "\\flask_app\\beyondchaosmaster")
-print('DEBUG SYS PATH: ' + sys.path)
+print('DEBUG SYS PATH: ' + f'{sys.path}')
 from beyondchaosmaster.randomizer import randomize
 from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
