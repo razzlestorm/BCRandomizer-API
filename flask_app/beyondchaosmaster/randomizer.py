@@ -4148,7 +4148,6 @@ def randomize(args):
 
     try:
         # Located in the flask_app main folder
-        upload_folder = config['ROM']['upload_folder']
         print('ARGS: ', args)
         sourcefile = args[0]
         f = open(sourcefile, 'rb')
@@ -4283,12 +4282,13 @@ def randomize(args):
         f.close()
 
     h = md5(data).hexdigest()
+    '''
     if h != MD5HASH:
         # EDIT THIS TO DEAL WITH BAD ROMS
         warning = ("\WARNING! The md5 hash of this file does not match the known "
               "hash of the english FF6 1.0 rom!")
         return warning
-
+    '''
     copyfile(sourcefile, outfile)
 
     flags = flags.lower()

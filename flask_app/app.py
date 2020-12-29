@@ -11,9 +11,8 @@ from werkzeug.utils import secure_filename
 
 # LOCAL IMPORTS
 
-sys.path.append(sys.path[0] + "\\flask_app")
-sys.path.append(sys.path[0] + "\\flask_app\\beyondchaosmaster")
-print('DEBUG SYS PATH: ' + f'{sys.path}')
+sys.path.append(sys.path[0] + "/flask_app")
+sys.path.append(sys.path[0] + "/flask_app/beyondchaosmaster")
 from beyondchaosmaster.randomizer import randomize
 from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
@@ -101,18 +100,18 @@ def randomize_file():
 # Create independent route with buttons to serve ROM/TXT
 ## Route to serve modded ROM file
 @app.route("/serve_files/<path:rom_name>", methods=["GET", "POST"])
-def serve_file(rom_name):
+def serve_files(rom_name):
     seed = rom_name.split(".")[1]
     log = rom_name.replace('smc', 'txt')
     return render_template("serve_files.html", filename=rom_name, seed=seed, log=log)
 
 @app.route("/serve_smc/<path:rom_name>", methods=["GET", "POST"])
 def serve_smc(rom_name):
-    return send_from_directory(upload_folder, filename=rom_name, as_attachment=True)
+    return send_from_directory('uploaded_files', filename=rom_name, as_attachment=True)
 
 @app.route("/serve_log/<path:log_name>", methods=["GET", "POST"])
 def serve_log(log_name):
-    return send_from_directory(upload_folder, filename=log_name, as_attachment=True)
+    return send_from_directory('uploaded_files', filename=log_name, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=debug_mode, port=5001)

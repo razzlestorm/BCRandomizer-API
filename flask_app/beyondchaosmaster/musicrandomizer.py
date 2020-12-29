@@ -19,7 +19,7 @@ except ImportError:
     MEI = False
     
 HIROM = 0xC00000
-MUSIC_PATH = os.path.join("beyondchaosmaster\\custom",'music')
+MUSIC_PATH = os.path.join("flask_app\\beyondchaosmaster\\custom",'music')
 INST_METADATA_OFFSET = 0x310000    #0x600 bytes
 CONFIG = configparser.RawConfigParser({
         'free_rom_space': '310600-380000',
@@ -322,7 +322,7 @@ def insert_instruments(fout, metadata_pos= False):
         filename = (name + '.brr').lower()
         
         try:
-            with open(os.path.join('beyondchaosmaster\\data', 'samples', filename), 'rb') as f:
+            with open(os.path.join('flask_app\\beyondchaosmaster\\data', 'samples', filename), 'rb') as f:
                 sdata = f.read()
         except IOError:
             print("WARNING: couldn't load sample file {}".format(filename))
@@ -1167,7 +1167,7 @@ def process_formation_music_by_table(data, form_music_overrides={}):
     o_monsters = 0xF0000
     o_epacks = 0xF5000
     
-    with open(os.path.join("beyondchaosmaster\\tables","formationmusic.txt"), "r") as f:
+    with open(os.path.join("flask_app\\beyondchaosmaster\\tables","formationmusic.txt"), "r") as f:
         tbl = f.readlines()
     
     table = []
