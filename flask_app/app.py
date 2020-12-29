@@ -107,7 +107,7 @@ def randomize_file():
     # Add options to args
     outfile = randomize(args)
     # The edited_file name has the upload_folder attached to its path
-    file_name = outfile.split("\\")[1]
+    file_name = outfile.split("/")[-1]
     return redirect(url_for("serve_files", rom_name=file_name))
 
 # Create independent route with buttons to serve ROM/TXT
