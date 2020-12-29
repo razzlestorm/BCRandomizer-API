@@ -653,7 +653,7 @@ def manage_character_appearance(fout, preserve_graphics=False):
 
         if sprite_swap_mode and c in swap_to:
             try:
-                g = open_mei_fallback(os.path.join(RUN_PATH "custom", "sprites", swap_to[c].file), "rb")
+                g = open_mei_fallback(os.path.join(RUN_PATH, "custom", "sprites", swap_to[c].file), "rb")
             except IOError:
                 newsprite = sprites[change_to[c]]
                 for ch in characters:
