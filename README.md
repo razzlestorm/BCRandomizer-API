@@ -34,6 +34,7 @@ End with an example of getting some data out of the system or using it for a lit
 
 ## TO DO
 
+* Deal with Heroku timeout during randomization
 * Check for conflicting modes/flags
 * Create better checks for improper smc files.
 * Create graphics for the html files
