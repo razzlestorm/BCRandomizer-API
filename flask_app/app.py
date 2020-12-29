@@ -66,6 +66,7 @@ def upload():
     if rfile and allowed_file(rfile.filename):
         filename = secure_filename(rfile.filename)
         print('CWD ', os.getcwd())
+        print('SUBDIRECTORIES ', os.listdir())
         rfile.save(os.path.join(upload_folder, filename))
         print(rfile)
         print(filename)
