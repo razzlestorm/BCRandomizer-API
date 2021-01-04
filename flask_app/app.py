@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, \
 request, session, url_for, send_from_directory, json
 from werkzeug.utils import secure_filename
+from celery import Celery
 
 # LOCAL IMPORTS
 
@@ -96,6 +97,9 @@ def options():
     return render_template("options.html", defaults=defaults, flags=flags, codes=codes, modes=modes, rom_name=rom_name)
 
 ## Route to run program
+# USE CELERY##################################################################################
+# Set up a while status == 'PENDING' sleep (1) loop else redirect to serve_files page
+# https://flask.palletsprojects.com/en/1.1.x/patterns/celery/
 @app.route("/randomize_file/", methods=["GET", "POST"])
 def randomize_file():
     romfile = os.path.join(upload_folder, request.args.get('rom_name'))
