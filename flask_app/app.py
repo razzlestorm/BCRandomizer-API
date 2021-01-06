@@ -22,8 +22,33 @@ sys.path.append("/app/flask_app/beyondchaosmaster")
 from beyondchaosmaster.randomizer import randomize
 from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
+
+from celery import Celery
+
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        broker=app.config['CELERY_BROKER_URL']
+    )
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+
 app = Flask(__name__)
 # app.configs
+flask_app.config.update(
+    CELERY_BROKER_URL='redis://localhost:6379',
+    CELERY_RESULT_BACKEND='redis://localhost:6379'
+)
+celery = make_celery(flask_app)
 # CHANGE FOR HEROKU
 '''
 load_dotenv()
@@ -98,7 +123,7 @@ def options():
 
 ## Route to run program
 # USE CELERY##################################################################################
-# Set up a while status == 'PENDING' sleep (1) loop else redirect to serve_files page
+# Set up a while status == 'PENDING' sleep (1) loop else redirect to serve_files page  
 # https://flask.palletsprojects.com/en/1.1.x/patterns/celery/
 @app.route("/randomize_file/", methods=["GET", "POST"])
 def randomize_file():
@@ -112,9 +137,15 @@ def randomize_file():
     outfile = randomize(args)
     # The edited_file name has the upload_folder attached to its path
     file_name = outfile.split("/")[-1]
-    return redirect(url_for("serve_files", rom_name=file_name))
+    # SEND TO CELERY
+    return redirect(url_for("waiting", rom_name=file_name))
 
-# Create independent route with buttons to serve ROM/TXT
+@app.route("/waiting/<path:rom_name>", methods=["GET"])
+def waiting(rom_name):
+
+    # check celery job is done
+    # if not done, sleep for a second
+
 ## Route to serve modded ROM file
 @app.route("/serve_files/<path:rom_name>", methods=["GET", "POST"])
 def serve_files(rom_name):
