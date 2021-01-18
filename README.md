@@ -4,6 +4,7 @@ When running, this Flask app will allow you to upload a Final Fantasy 3/6 .smc o
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Run `python flask_app/app.py`
 
 ### Prerequisites
 

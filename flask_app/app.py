@@ -13,8 +13,8 @@ from celery import Celery
 # LOCAL IMPORTS
 
 #for local
-sys.path.append(sys.path[0] + "/flask_app")
-sys.path.append(sys.path[0] + "/flask_app/beyondchaosmaster")
+sys.path.append(sys.path[0] + "\\beyondchaosmaster")
+print('DEBUG SYS PATH: ' + f'{sys.path}')
 
 #For Heroku
 sys.path.append("/app/flask_app")
@@ -43,12 +43,17 @@ def make_celery(app):
 
 
 app = Flask(__name__)
-# app.configs
+# app configs for local
+app.config.from_pyfile("app_config.cfg")
+
+# app.configs for Heroku
+'''
 flask_app.config.update(
-    CELERY_BROKER_URL='redis://localhost:6379',
-    CELERY_RESULT_BACKEND='redis://localhost:6379'
+    CELERY_BROKER_URL=os.getenv('CELERY_BROKER_URL'),
+    CELERY_RESULT_BACKEND=os.getenv('CELERY_RESULT_BACKEND')
 )
-celery = make_celery(flask_app)
+'''
+celery = make_celery(app)
 # CHANGE FOR HEROKU
 '''
 load_dotenv()
@@ -134,6 +139,7 @@ def randomize_file():
     print(input_codes)
     args = [romfile, seed, mode, input_codes[2:]]
     # Add options to args
+    # CELERIZE THIS
     outfile = randomize(args)
     # The edited_file name has the upload_folder attached to its path
     file_name = outfile.split("/")[-1]
@@ -142,7 +148,7 @@ def randomize_file():
 
 @app.route("/waiting/<path:rom_name>", methods=["GET"])
 def waiting(rom_name):
-
+    pass
     # check celery job is done
     # if not done, sleep for a second
 
