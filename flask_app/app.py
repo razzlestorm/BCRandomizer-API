@@ -14,7 +14,7 @@ from celery import Celery
 
 #for local
 sys.path.append(sys.path[0] + "\\beyondchaosmaster")
-print('DEBUG SYS PATH: ' + f'{sys.path}')
+# print('DEBUG SYS PATH: ' + f'{sys.path}')
 
 #For Heroku
 sys.path.append("/app/flask_app")
@@ -25,11 +25,14 @@ from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
 from celery import Celery
 
+# COMMENT OUT FOR HEROKU
+load_dotenv(verbose=True)
+
 def make_celery(app):
     celery = Celery(
         app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL']
+        backend=os.getenv('CELERY_RESULT_BACKEND'),
+        broker=os.getenv('CELERY_BROKER_URL')
     )
     celery.conf.update(app.config)
 
@@ -44,7 +47,7 @@ def make_celery(app):
 
 app = Flask(__name__)
 # app configs for local
-app.config.from_pyfile("app_config.cfg")
+# app.config.from_pyfile("app_config.cfg")
 
 # app.configs for Heroku
 '''
@@ -54,11 +57,6 @@ flask_app.config.update(
 )
 '''
 celery = make_celery(app)
-# CHANGE FOR HEROKU
-'''
-load_dotenv()
-app.config.from_pyfile('app_config.cfg')
-'''
 
 SECRET_KEY = os.getenv('FLASK_SECRET_KEY') 
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -66,18 +64,18 @@ app.config['SECRET_KEY'] = SECRET_KEY
 allowed_extensions = os.getenv('ALLOWED_EXTENSIONS')
 upload_folder = os.getenv('UPLOAD_FOLDER')
 debug_mode = os.getenv('DEBUG_MODE')
-print(allowed_extensions, upload_folder, debug_mode)
-#logging_file_name = app.config['LOGGING_FILE_NAME']
-#logging_file_size = app.config['LOGGING_FILE_SIZE']
-#logging_file_count = app.config['LOGGING_FILE_COUNT']
-#logging_file_level = app.config['LOGGING_FILE_LEVEL']
-#if SECRET_KEY is None:
+# print(allowed_extensions, upload_folder, debug_mode)
+# logging_file_name = app.config['LOGGING_FILE_NAME']
+# logging_file_size = app.config['LOGGING_FILE_SIZE']
+# logging_file_count = app.config['LOGGING_FILE_COUNT']
+# logging_file_level = app.config['LOGGING_FILE_LEVEL']
+# if SECRET_KEY is None:
 #    app.logger.error('Env variable FLASK_SECRET_KEY is not defined. Please set it with a custom secret value in ./.env')
 #    sys.exit(1)
 
 
-def allowed_file(filename):
-    return '.' and filename.rsplit(".", 1)[1].lower() in allowed_extensions
+def allowed_file(filename, checklist):
+    return '.' and filename.rsplit(".", 1)[1].lower() in checklist
 
 # Routes that we're going to want:
 ## Route to display webpage (this can just be the base route)
@@ -94,7 +92,7 @@ def upload():
         flash("Please choose a file to upload")
         return redirect(url_for("index"))
     rfile = request.files['file']
-    if rfile and allowed_file(rfile.filename):
+    if rfile and allowed_file(rfile.filename, allowed_extensions):
         filename = secure_filename(rfile.filename)
         print('CWD ', os.getcwd())
         print('SUBDIRECTORIES ', os.listdir())
@@ -161,11 +159,11 @@ def serve_files(rom_name):
 
 @app.route("/serve_smc/<path:rom_name>", methods=["GET", "POST"])
 def serve_smc(rom_name):
-    return send_from_directory('uploaded_files', filename=rom_name, as_attachment=True)
+    return send_from_directory('', filename=rom_name, as_attachment=True)
 
 @app.route("/serve_log/<path:log_name>", methods=["GET", "POST"])
 def serve_log(log_name):
-    return send_from_directory('uploaded_files', filename=log_name, as_attachment=True)
+    return send_from_directory('', filename=log_name, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=debug_mode, port=5001)
