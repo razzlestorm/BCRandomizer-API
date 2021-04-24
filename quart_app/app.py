@@ -21,6 +21,7 @@ from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
 
 # COMMENT OUT FOR HEROKU
+# Uncomment for local
 # load_dotenv(verbose=True)
 
 
