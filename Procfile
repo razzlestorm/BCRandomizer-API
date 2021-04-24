@@ -1,1 +1,1 @@
-web: hypercorn quart_app:app -t 120
+web: hypercorn -b 0.0.0.0:${PORT} "quart_app:app"

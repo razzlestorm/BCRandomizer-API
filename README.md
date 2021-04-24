@@ -10,8 +10,6 @@ Run `python quart_app/app.py`
 
 Python 3.7 or higher
 
-The latest version of SubtractionSoup's fork of BeyondChaos.
-
 Then, simply navigate to your virtual environment of choice, and run the following command:
 ```
 pip install -r requirements.txt
