@@ -26,7 +26,8 @@ pip install -r requirements.txt
 You will also need to create a .env file with the following environment variables:
 QUART_SECRET_KEY,
 ALLOWED_EXTENSIONS,
-UPLOAD_FOLDER
+UPLOAD_FOLDER.
+
 For more about .env files, please visit see the [dotenv project](https://pypi.org/project/python-dotenv/).
 
 Finally, to run the project locally:
