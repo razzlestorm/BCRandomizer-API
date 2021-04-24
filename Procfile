@@ -1,1 +1,1 @@
-web: gunicorn flask_app:app -t 120
+web: gunicorn quart_app:app -t 120

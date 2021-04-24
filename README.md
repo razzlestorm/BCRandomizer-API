@@ -4,74 +4,63 @@ When running, this Flask app will allow you to upload a Final Fantasy 3/6 .smc o
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-Run `python flask_app/app.py`
+Run `python quart_app/app.py`
 
 ### Prerequisites
 
 Python 3.7 or higher
 
-Simply navigate to your virtual environment of choice, and run the following command:
+The latest version of SubtractionSoup's fork of BeyondChaos.
+
+Then, simply navigate to your virtual environment of choice, and run the following command:
 ```
 pip install -r requirements.txt
 ```
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+This project can be installed locally for testing purposes. In order to do that, first, navigate to the directory you'd like to install in, then:
 
 ```
-Give the example
+git clone git@github.com:razzlestorm/BCRandomizer-API.git
 ```
 
-And repeat
+then, navigate into that folder and type:
 
 ```
-until finished
+pip install -r requirements.txt
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+You will also need to create a .env file with the following environment variables:
+QUART_SECRET_KEY,
+ALLOWED_EXTENSIONS,
+UPLOAD_FOLDER
+For more about .env files, please visit see the [dotenv project](https://pypi.org/project/python-dotenv/).
+
+Finally, to run the project locally:
+
+```
+python quart_app/app.py
+```
 
 ## TO DO
 
-* Deal with Heroku timeout during randomization
+* Separate functions/routes
+* Get async functionality working
 * Check for conflicting modes/flags
 * Create better checks for improper smc files.
 * Create graphics for the html files
 * Enable batch generation of files.
 
 
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
 ## Deployment
-
-Add additional notes about how to deploy this on a live system
+This project is currently deployed to a free Heroku node, [here](https://bcrandomizerapi.herokuapp.com/)
 
 ## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Quart](https://pgjones.gitlab.io/quart/) - The web framework used
 
 ## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Please fork and feel free to reach out to me on Discord with any questions! 
 
 ## Versioning
 

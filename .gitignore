@@ -1,6 +1,6 @@
 # Upload folder
-quart_app/uploaded_files/
-quart_app/beyondchaosmaster/
+#quart_app/uploaded_files/
+#quart_app/beyondchaosmaster/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

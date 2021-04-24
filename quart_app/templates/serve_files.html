@@ -1,0 +1,8 @@
+<!doctype html>
+<head>
+</head>
+<title>Your seed is {{seed}} </title>
+<h1>Here's your file!</h1>
+<button type="button" onclick="window.location.href='{{ url_for('serve_log', log_name=log ) }}';">Download log</button>
+<button type="button" onclick="window.location.href='{{ url_for('serve_smc', rom_name=filename ) }}';">Download smc</button>
+</form>
