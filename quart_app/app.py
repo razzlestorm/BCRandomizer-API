@@ -136,7 +136,7 @@ async def serve_smc(rom_name):
     print(pathlib.Path.cwd())
     print(rom_name)
     # Added /upload_folder for Heroku
-    path = pathlib.Path(r'quart_app/upload_folder').joinpath(rom_name)
+    path = pathlib.Path(r'quart_app/').joinpath(upload_folder, rom_name)
     print(path)
     smc = await send_file(path, as_attachment=True)
     print(smc)
@@ -145,7 +145,7 @@ async def serve_smc(rom_name):
 @app.route("/serve_log/<path:log_name>", methods=["GET", "POST"])
 async def serve_log(log_name):
     print(log_name)
-    path = pathlib.Path(r'quart_app/upload_folder').joinpath(log_name)
+    path = pathlib.Path(r'quart_app/upload_folder').joinpath(upload_folder, log_name)
     print(path)
     log = await send_file(path, as_attachment=True)
     print(log)
