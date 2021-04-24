@@ -40,7 +40,7 @@ python quart_app/app.py
 
 * Separate functions/routes
 * Get async functionality working
-* Check for conflicting modes/flags
+* Treat BC as blackbox and use subprocess
 * Create better checks for improper smc files.
 * Create graphics for the html files
 * Enable batch generation of files.
