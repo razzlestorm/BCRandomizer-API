@@ -22,7 +22,7 @@ from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
 # COMMENT OUT FOR HEROKU
 # Uncomment for local
-# load_dotenv(verbose=True)
+load_dotenv(verbose=True)
 
 
 app = Quart(__name__)
@@ -138,7 +138,10 @@ async def serve_smc(rom_name):
     # Added /upload_folder for Heroku
     path = pathlib.Path(upload_folder, rom_name)
     print(path)
-    smc = await send_file(path, as_attachment=True)
+    try:
+        smc = await send_file(path, as_attachment=True)
+    except FileNotFoundError:
+        smc = await send_file(pathlib.Path(r'quart_app', rom_name), as_attachment=True)
     print(smc)
     return smc
 
@@ -147,7 +150,10 @@ async def serve_log(log_name):
     print(log_name)
     path = pathlib.Path(upload_folder, log_name)
     print(path)
-    log = await send_file(path, as_attachment=True)
+    try:
+        log = await send_file(path, as_attachment=True)
+    except FileNotFoundError:
+        log = await send_file(pathlib.Path(r'quart_app', log_name), as_attachment=True)
     print(log)
     return log
 
