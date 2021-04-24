@@ -21,7 +21,7 @@ from beyondchaosmaster.options import ALL_FLAGS, ALL_CODES, ALL_MODES
 
 
 # COMMENT OUT FOR HEROKU
-load_dotenv(verbose=True)
+# load_dotenv(verbose=True)
 
 
 app = Quart(__name__)
