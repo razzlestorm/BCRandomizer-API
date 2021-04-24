@@ -55,10 +55,6 @@ This project is currently deployed to a free Heroku node, [here](https://bcrando
 ## Contributing
 Please fork and feel free to reach out to me on Discord with any questions! 
 
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
 ## Authors
 
 * **abyssonym** - *Initial work* - [Abyssonym](https://github.com/abyssonym/beyondchaos)
@@ -68,9 +64,3 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
