@@ -1,7 +1,10 @@
 # STD IMPORTS
+import asyncio
 import os
 import pathlib
+from random import choice
 import sys
+from uuid import uuid1
 
 from dotenv import load_dotenv
 from quart import Quart, render_template, redirect, \
@@ -31,6 +34,12 @@ allowed_extensions = os.getenv('ALLOWED_EXTENSIONS')
 upload_folder = os.getenv('UPLOAD_FOLDER')
 debug_mode = os.getenv('DEBUG_MODE')
 
+
+# task storage
+task_storage = {}
+
+def make_task_id():
+    return str(uuid1())
 
 def allowed_file(filename, checklist):
     """
@@ -77,16 +86,18 @@ async def options():
     if request.method == "POST":
         # We see the values the user has checked
         # for code in all_codes+all_flags:
-        # NOTE: This doesn't currently filter flags based on mode
+        # NOTE: This doesn't currently filter flags based on mod
         form = await request.form
         seed = form.get('seed')
         mode = form.get('mode')
-        flagcodemode = json.dumps([k for k in form.keys()])
-        return redirect(url_for("randomize_file",
-                                mode=mode,
-                                seed=seed,
-                                flags_list=flagcodemode,
-                                rom_name=rom_name))
+        input_codes = [k for k in form.keys()]
+        print(input_codes)
+        romfile = os.path.join(upload_folder, rom_name)
+        args = [romfile, seed, mode, input_codes[2:]]
+        task_id = make_task_id()
+        task_storage[task_id] = asyncio.ensure_future(run_randomizer(args))
+        print("TASK CREATED")
+        return redirect(url_for("waiting"), task_id)
     return await render_template("options.html",
                                  defaults=defaults,
                                  flags=flags,
@@ -97,8 +108,7 @@ async def options():
 
 async def run_randomizer(args):
     print("RANDOMIZATION BEGINNING")
-    return randomize(args)
-
+    return await randomize(args)
 
 # Route to run program
 @app.route("/randomize_file/", methods=["GET", "POST"])
@@ -109,31 +119,137 @@ async def randomize_file():
     input_codes = json.loads(request.args.get('flags_list'))
     print(input_codes)
     args = [romfile, seed, mode, input_codes[2:]]
-    task = await run_randomizer(args)
+    
+    # task.add_done_callback(redirect(url_for("serve_files", rom_name=file_name))
     # The edited_file name has the upload_folder attached to its path
-    print(task)
+    # print(task)
     # TODO: show waiting route while task is running
     # https://pgjones.gitlab.io/quart/how_to_guides/event_loop.html
-    file_name = task.split("/")[-1]
-    return redirect(url_for("serve_files", rom_name=file_name))
+    
+    return redirect(url_for("waiting", romfile=romfile, args=args))
+
+
+
+
 
 '''
+from uuid import uuid1
+
+import quart
+
+
+def make_task_id():
+    return str(uuid1())
+
+
+background_tasks = {}
+
+app = quart.Quart('my-api')
+
+
+@app.route("/create-file", methods=["POST"])
+async def form_handler():
+    form_data = ... # get form data here and parse it out
+
+    task_id = make_task_id()
+    task = asyncio.create_task(create_file(form_data), name=task_id)
+    background_tasks[task_id] = task
+
+    # Return the task id with HTTP status 202 ("Accepted")
+    # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/202
+    return task_id, 202
+https://stackoverflow.com/questions/45226289/how-to-poll-python-asyncio-task-status
+
+@app.route("/create-file-wait/<task_id>", methods=["GET"])
+async def waiting(task_id):
+    try:
+        task = background_tasks[task_id]
+    except KeyError:
+        return f'Unknown task ID: {task_id}', 404
+
+    await task
+
+    if (exc := task.exception()) is not None:
+        body, status = str(exc), 500
+    else:
+        created_file_data = task.result
+        body, status = created_file_data, 200
+
+    del background_tasks[task_id]
+    return body, status
+
+you might also want a way to GET a list of all currently running background jobs
+fix error — Today at 8:14 PM
+and remove tasks if nobody grabs them in a while, I suppose
+salt rock lamp — Today at 8:14 PM
+@app.route("/create-file-list", methods=["GET"])
+async def waiting(task_id):
+    return list(background_tasks.values())
+yeah good idea, @fix error you might want to keep track of when the task was started and have some background job on a scheduler that deletes old tasks
+RazzleStorm — Today at 8:18 PM
+Hm, okay, I think I understand. Is the (exc := task.exception()) is not None block where I would be checking the task status? Ideally I'd like to be able to display one thing before the task is complete, but then display the task's data after it has completed.
+Also thank you @salt rock lamp ! Storing the tasks in a dict makes sense.
+salt rock lamp — Today at 8:30 PM
+the exc :=  thing is because if the task raised an exception, that exception will be raised in your face when you try to retrieve the result
+this is probably not the same as the success/failure status of the file creation operation itself, although they might be related
+i also don't know how this is meant to work w/ your particular frontend
+maybe instead of waiting for the task to complete, the client should have to poll for it
+
+
+@app.route("/create-file-check/<task_id>", methods=["GET"])
+async def create_file_check(task_id):
+    try:
+        task = background_tasks[task_id]
+    except KeyError:
+        return f'Unknown task ID: {task_id}', 404
+
+    if task.done():
+        # Do something with the completed task.
+        # Don't forget to check for an exception!
+        ...
+    else:
+        # Inform the client that the task is still in progress
+        ...
+
+
+for a real-world example of an API like this, see the Mailchimp "batch" API
+https://mailchimp.com/developer/marketing/guides/run-async-requests-batch-endpoint/
+https://mailchimp.com/developer/marketing/api/batch-operations/
+'''
+
+
+
+@app.route("/task-check/<task_id>", methods=["GET"])
+async def task_check(task_id):
+    try:
+        task = task_storage[task_id]
+    except KeyError:
+        return f'Unknown task ID: {task_id}', 404
+    except asyncio.CancelledError:
+        return "The task was cancelled"
+    
+    if task.done():
+        # check for exceptions
+        # do something
+        return task_id
+    else:
+        # return something?
+        return False
+         
+
+
 @app.route("/waiting/<task_id>", methods=["GET"])
 async def waiting(task_id):
-    task = run_randomizer.AsyncResult(task_id)
-    # if not done, sleep for a second
-    rom_name = request.args.get('rom_name')
-    if task.status != "SUCCESS":
-        # keep going
-        return redirect(url_for("serve_files", rom_name=rom_name))
-
-    image = choice(os.listdir('quart_app/templates/img'))
-    image = os.path.join('img', image)
+    print("WAITING ROUTE HIT")
     breakpoint()
-    return await render_temple("pleasewait.html",
-                               wait_image=image,
-                               task_id=task_id)
-'''
+    while not task_check(task_id):
+        image = choice(os.listdir('quart_app/templates/img'))
+        image = os.path.join('img', image)
+        await render_template("pleasewait.html",
+                               wait_image=image)
+        #redirect to waiting again after x seconds?
+    return redirect(url_for("serve_files"), rom_name=task_id)
+
 
 
 # Route to serve modded ROM file
