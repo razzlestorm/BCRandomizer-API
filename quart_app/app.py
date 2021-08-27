@@ -1,5 +1,6 @@
 # STD IMPORTS
 import asyncio
+import concurrent.futures
 import os
 import pathlib
 from random import choice
@@ -9,6 +10,7 @@ from uuid import uuid1
 from dotenv import load_dotenv
 from quart import Quart, render_template, redirect, \
                   request, url_for, send_file, json
+from quart.utils import run_sync
 from werkzeug.utils import secure_filename
 
 # LOCAL IMPORTS
@@ -83,6 +85,11 @@ async def options():
                 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
                 'u', 'w', 'y', 'z', 'johnnydmad',
                 'makeover', 'partyparty']
+
+    def run_randomizer(args):
+        print("RANDOMIZATION BEGINNING")
+        return randomize(args)
+    
     if request.method == "POST":
         # We see the values the user has checked
         # for code in all_codes+all_flags:
@@ -95,9 +102,9 @@ async def options():
         romfile = os.path.join(upload_folder, rom_name)
         args = [romfile, seed, mode, input_codes[2:]]
         task_id = make_task_id()
-        task_storage[task_id] = asyncio.ensure_future(run_randomizer(args))
+        task_storage[task_id] = await run_sync(run_randomizer(args))
         print("TASK CREATED")
-        return redirect(url_for("waiting"), task_id)
+        return redirect(url_for("waiting", task_id=task_id))
     return await render_template("options.html",
                                  defaults=defaults,
                                  flags=flags,
@@ -105,15 +112,14 @@ async def options():
                                  modes=modes,
                                  rom_name=rom_name)
 
+# https://stackoverflow.com/questions/41063331/how-to-use-asyncio-with-existing-blocking-library
+################ THIS SHOULD BE THE SOLUTION https://pgjones.gitlab.io/quart/how_to_guides/sync_code.html
 
-async def run_randomizer(args):
-    print("RANDOMIZATION BEGINNING")
-    return await randomize(args)
-
+'''
 # Route to run program
 @app.route("/randomize_file/", methods=["GET", "POST"])
 async def randomize_file():
-    romfile = os.path.join(upload_folder, request.args.get('rom_name'))
+    romfile = os.path.join(upload_folder, request.args.get('rom_name')) 
     seed = request.args.get('seed')
     mode = request.args.get('mode')
     input_codes = json.loads(request.args.get('flags_list'))
@@ -127,7 +133,7 @@ async def randomize_file():
     # https://pgjones.gitlab.io/quart/how_to_guides/event_loop.html
     
     return redirect(url_for("waiting", romfile=romfile, args=args))
-
+'''
 
 
 
@@ -221,6 +227,7 @@ https://mailchimp.com/developer/marketing/api/batch-operations/
 
 @app.route("/task-check/<task_id>", methods=["GET"])
 async def task_check(task_id):
+    print("Task Checking STARTED...")
     try:
         task = task_storage[task_id]
     except KeyError:
@@ -240,22 +247,24 @@ async def task_check(task_id):
 
 @app.route("/waiting/<task_id>", methods=["GET"])
 async def waiting(task_id):
+
+
     print("WAITING ROUTE HIT")
-    breakpoint()
-    while not task_check(task_id):
+    while not await task_check(task_id):
         image = choice(os.listdir('quart_app/templates/img'))
         image = os.path.join('img', image)
         await render_template("pleasewait.html",
                                wait_image=image)
         #redirect to waiting again after x seconds?
-    return redirect(url_for("serve_files"), rom_name=task_id)
+    return redirect(url_for("serve_files", rom_name=task_id))
 
 
 
 # Route to serve modded ROM file
 @app.route("/serve_files/<path:rom_name>", methods=["GET", "POST"])
 async def serve_files(rom_name):
-    seed = rom_name.split(".")[1]
+    #seed = rom_name.split(".")[1]
+    print(task_storage[rom_name])
     log = rom_name.replace('smc', 'txt')
     return await render_template("serve_files.html",
                                  filename=rom_name,
