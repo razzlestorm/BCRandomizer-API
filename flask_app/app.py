@@ -1,4 +1,5 @@
 # STD IMPORTS
+import asyncio
 import os
 import pathlib
 from random import choice
@@ -56,12 +57,21 @@ def allowed_file(filename, checklist):
     """
     return '.' and filename.rsplit(".", 1)[1].lower() in checklist
 
+'''
+def run_randomizer(args):
+    print("RANDOMIZATION BEGINNING")
+    return randomize(args)
+'''
 
 @app.route("/", methods=["GET"])
 def index():
     """Display basic webpage"""
     return render_template("index.html")
 
+async def run_randomizer(args):
+    loop = asyncio.get_event_loop()
+    rom = await loop.run_in_executor(None, randomize, args)
+    return rom
 
 # Route to upload ROM
 @app.route("/", methods=["POST"])
@@ -92,11 +102,6 @@ def options():
                 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
                 'u', 'w', 'y', 'z', 'johnnydmad',
                 'makeover', 'partyparty']
-
-    def run_randomizer(args):
-        print("RANDOMIZATION BEGINNING")
-        return randomize(args)
-    
     if request.method == "POST":
         # We see the values the user has checked
         # for code in all_codes+all_flags:
@@ -109,7 +114,9 @@ def options():
         romfile = os.path.join(upload_folder, rom_name)
         args = [romfile, seed, mode, input_codes[2:]]
         task_id = make_task_id()
-        task_storage[task_id] =  run_sync(run_randomizer(args))
+        task_storage[task_id] = asyncio.run(run_randomizer(args))
+        # If this doesn't work, emit to html to switch to a new page, then run this blockingly~~~~
+        # then emit once task is done
         print("TASK CREATED")
         return redirect(url_for("waiting", task_id=task_id))
     return render_template("options.html",
@@ -120,12 +127,30 @@ def options():
                                  rom_name=rom_name)
 
 
+def task_check(task_id):
+    print("Task Checking STARTED...")
+    try:
+        task = task_storage[task_id]
+    except KeyError:
+        return f'Unknown task ID: {task_id}', 404
+    except asyncio.CancelledError:
+        return "The task was cancelled"
+
+    if task.done():
+        breakpoint()
+        # check for exceptions
+        # do something
+        return task_id
+    else:
+        breakpoint()
+        # return something?
+        return False
+
 
 @app.route("/waiting/<task_id>", methods=["GET"])
 def waiting(task_id):
-
     print("WAITING ROUTE HIT")
-    while not  task_check(task_id):
+    while not task_check(task_id):
         image = choice(os.listdir('quart_app/templates/img'))
         image = os.path.join('img', image)
         return render_template("pleasewait.html",
