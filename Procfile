@@ -1,1 +1,1 @@
-web: hypercorn -b 0.0.0.0:${PORT} "quart_app:app"
+web: hypercorn -b 0.0.0.0:${PORT} "flask_app:app"

@@ -9,6 +9,7 @@ from uuid import uuid1
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, \
                   request, url_for, send_file, json
+from flask_cors import CORS, cross_origin
 from flask_socketio import SocketIO, emit
 from werkzeug.utils import secure_filename
 
@@ -28,12 +29,13 @@ load_dotenv(verbose=True)
 
 
 app = Flask(__name__)
+#CORS(app)
 SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
 allowed_extensions = os.getenv('ALLOWED_EXTENSIONS')
 upload_folder = os.getenv('UPLOAD_FOLDER')
 debug_mode = os.getenv('DEBUG_MODE')
-sockio = SocketIO(app)
+socketio = SocketIO(app, async_mode="eventlet")
 
 
 
@@ -63,17 +65,18 @@ def run_randomizer(args):
     return randomize(args)
 '''
 
+@cross_origin()
 @app.route("/", methods=["GET"])
 def index():
     """Display basic webpage"""
     return render_template("index.html")
 
-async def run_randomizer(args):
-    loop = asyncio.get_event_loop()
-    rom = await loop.run_in_executor(None, randomize, args)
+def run_randomizer(args):
+    rom = randomize(args)
     return rom
 
 # Route to upload ROM
+@cross_origin()
 @app.route("/", methods=["POST"])
 def upload():
     upload =  request.files
@@ -89,7 +92,12 @@ def upload():
         return redirect(url_for("options", rom_name=filename))
 
 
+@socketio.on("init_event")
+def print_message(data):
+    print(data)
+
 # Route to choose options
+@cross_origin()
 @app.route("/options/", methods=["GET", "POST"])
 def options():
     rom_name = request.args.get('rom_name')
@@ -114,10 +122,10 @@ def options():
         romfile = os.path.join(upload_folder, rom_name)
         args = [romfile, seed, mode, input_codes[2:]]
         task_id = make_task_id()
-        task_storage[task_id] = asyncio.run(run_randomizer(args))
+        socketio.emit("task_started", {'task_id': task_id}, broadcast=True)
+        task_storage[task_id] = run_randomizer(args)
         # If this doesn't work, emit to html to switch to a new page, then run this blockingly~~~~
         # then emit once task is done
-        print("TASK CREATED")
         return redirect(url_for("waiting", task_id=task_id))
     return render_template("options.html",
                                  defaults=defaults,
@@ -151,7 +159,7 @@ def task_check(task_id):
 def waiting(task_id):
     print("WAITING ROUTE HIT")
     while not task_check(task_id):
-        image = choice(os.listdir('quart_app/templates/img'))
+        image = choice(os.listdir('flask_app/templates/img'))
         image = os.path.join('img', image)
         return render_template("pleasewait.html",
                                wait_image=image)
@@ -182,7 +190,7 @@ def serve_smc(rom_name):
     try:
         smc =  send_file(path, as_attachment=True)
     except FileNotFoundError:
-        path = pathlib.Path(r'quart_app', rom_name)
+        path = pathlib.Path(r'flask_app', rom_name)
         smc =  send_file(path, as_attachment=True)
     print(smc)
     return smc
@@ -196,10 +204,11 @@ def serve_log(log_name):
     try:
         log =  send_file(path, as_attachment=True)
     except FileNotFoundError:
-        path = pathlib.Path(r'quart_app', log_name)
+        path = pathlib.Path(r'flask_app', log_name)
         log =  send_file(path, as_attachment=True)
     print(log)
     return log
 
 if __name__ == '__main__':
-    app.run(debug=debug_mode, port=5001)
+    socketio.run(app, host='localhost', port=5000)
+    #app.run(debug=debug_mode, port=5001)

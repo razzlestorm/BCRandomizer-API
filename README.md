@@ -33,7 +33,7 @@ For more about .env files, please visit see the [dotenv project](https://pypi.or
 Finally, to run the project locally:
 
 ```
-python quart_app/app.py
+python flask_app/app.py
 ```
 
 ## TO DO
@@ -50,7 +50,7 @@ python quart_app/app.py
 This project is currently deployed to a free Heroku node, [here](https://bcrandomizerapi.herokuapp.com/)
 
 ## Built With
-* [Quart](https://pgjones.gitlab.io/quart/) - The web framework used
+* [Flask](https://flask.palletsprojects.com/en/2.0.x/) - The web framework used
 
 ## Contributing
 Please fork and feel free to reach out to me on Discord with any questions! 
